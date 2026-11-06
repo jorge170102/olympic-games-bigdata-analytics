@@ -6,7 +6,7 @@
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-F37626?logo=jupyter&logoColor=white)
 ![VS Code](https://img.shields.io/badge/VS%20Code-Entorno%20local-007ACC?logo=visualstudiocode&logoColor=white)
-![Estado](https://img.shields.io/badge/Estado-Validaci%C3%B3n%20Spark%20pendiente-yellow)
+![Estado](https://img.shields.io/badge/Estado-An%C3%A1lisis%20ejecutado-success)
 
 ## Descripción del proyecto
 
@@ -35,20 +35,16 @@ El proyecto está organizado para trabajar **localmente con VS Code y Jupyter** 
 ## Estructura del proyecto
 
 ```text
-Sumativa2_BigData_UNAB/
+olympic-games-bigdata-analytics/
 ├── data/
-│   ├── deportista.csv          # 67.786 registros
-│   ├── deportista2.csv         # 67.785 registros
-│   ├── equipo.csv              # 1.184 equipos
-│   ├── evento.csv              # 765 eventos
-│   ├── resultados.csv          # 271.116 resultados
-│   └── juegos.json             # 51 juegos
-├── mcdi502_s2_grupo7.ipynb     # Notebook principal; nombre por ajustar
-├── requirements.txt            # Dependencias de Python
-├── RUBRICA_CHECKLIST.md        # Matriz de verificación (117 puntos)
-├── VALIDACION_DATOS.md         # Auditoría de archivos de entrada
-├── presentacion/
-│   └── guion_video.md          # Guion para la presentación grupal
+│   ├── deportista.csv
+│   ├── deportista2.csv
+│   ├── equipo.csv
+│   ├── evento.csv
+│   ├── juegos.json
+│   └── resultados.csv
+├── Sumativa_2_grupo7.ipynb
+├── requirements.txt
 ├── .gitignore
 └── README.md
 ```
