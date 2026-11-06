@@ -1,0 +1,14 @@
+# Python / Jupyter
+.venv/
+venv/
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
+# Datos generados a partir de los originales
+data_procesada/
+# Vídeos/entregas finales
+*.mp4
+entrega_final/
+# Configuración local
+.vscode/
+.DS_Store
