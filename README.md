@@ -14,7 +14,6 @@ Este repositorio reúne el desarrollo de la **Sumativa 2 de Big Data (Taller 1)*
 
 El proyecto está organizado para trabajar **localmente con VS Code y Jupyter** y versionar el trabajo en GitHub. **No requiere Google Colab, MySQL ni PostgreSQL** para los procedimientos descritos.
 
-> **Estado de validación:** se revisó de forma estática la implementación y se contrastaron los archivos originales mediante Python estándar. **No se ha certificado la ejecución integral con PySpark en el entorno donde se preparó esta versión.** Antes de entregar, el equipo debe ejecutar todas las celdas y guardar sus resultados visibles. La matriz de la pauta suma **117 puntos posibles**, no una puntuación obtenida.
 
 ## Equipo de trabajo
 
