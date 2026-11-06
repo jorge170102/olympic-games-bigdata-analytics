@@ -43,7 +43,7 @@ Sumativa2_BigData_UNAB/
 │   ├── evento.csv              # 765 eventos
 │   ├── resultados.csv          # 271.116 resultados
 │   └── juegos.json             # 51 juegos
-├── mcdi502_s2_grupox.ipynb     # Notebook principal; nombre por ajustar
+├── mcdi502_s2_grupo7.ipynb     # Notebook principal; nombre por ajustar
 ├── requirements.txt            # Dependencias de Python
 ├── RUBRICA_CHECKLIST.md        # Matriz de verificación (117 puntos)
 ├── VALIDACION_DATOS.md         # Auditoría de archivos de entrada
@@ -53,7 +53,7 @@ Sumativa2_BigData_UNAB/
 └── README.md
 ```
 
-Los nombres y cantidades anteriores describen los archivos previstos en el proyecto. El notebook todavía utiliza `grupox` como nombre de referencia hasta que el equipo confirme el nombre definitivo.
+Los nombres y cantidades anteriores describen los archivos previstos en el proyecto. El notebook todavía utiliza `grupo7` como nombre de referencia hasta que el equipo confirme el nombre definitivo.
 
 ## Requisitos y preparación del entorno
 
@@ -133,7 +133,7 @@ Según la guía proporcionada, la entrega requiere **un archivo ZIP** que conten
 
 > **Importante:** el proyecto de desarrollo puede incluir datos, dependencias, auditoría y guion, pero **el guion no reemplaza la grabación**. Tampoco basta con enviar un enlace de GitHub si Canvas exige el ZIP.
 
-La guía utiliza nombres de ejemplo como `mcdi502_s2_grupox.ipynb` y `mcdi502_s2_grupox_video.mp4`, pero también menciona un límite de **20 caracteres**, lo que genera una inconsistencia con esos ejemplos. El equipo debe confirmar con el docente cuál instrucción de nomenclatura tiene prioridad. Si se admiten nombres abreviados, `s2_g7.ipynb` y `s2_g7_video.mp4` cumplen ese límite.
+La guía utiliza nombres de ejemplo como `mcdi502_s2_grupo7.ipynb` y `mcdi502_s2_grupo7_video.mp4`, pero también menciona un límite de **20 caracteres**, lo que genera una inconsistencia con esos ejemplos. El equipo debe confirmar con el docente cuál instrucción de nomenclatura tiene prioridad. Si se admiten nombres abreviados, `s2_g7.ipynb` y `s2_g7_video.mp4` cumplen ese límite.
 
 ## Integridad académica y alcance
 
