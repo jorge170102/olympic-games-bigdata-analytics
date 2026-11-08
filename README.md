@@ -1,7 +1,7 @@
 # Análisis histórico de los Juegos Olímpicos con Apache Spark
 
-**Sumativa 2 · Taller 1 · Big Data (MCDI502)**  
-**Magíster en Ciencia de Datos e Inteligencia Artificial · Universidad Andrés Bello (UNAB) · Grupo 7**
+**Evaluación Sumativa 2 · Taller 1 · MCDI502 — Gestión de Datos y Tecnologías Big Data**  
+**Magíster en Ciencia de Datos e Inteligencia Artificial · Universidad Andrés Bello · Grupo 7**
 
 ![Apache Spark](https://img.shields.io/badge/Apache_Spark-4.0.3-E25A1C?logo=apachespark&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.14.8-3776AB?logo=python&logoColor=white)
@@ -12,9 +12,7 @@
 
 Este proyecto analiza registros históricos de participaciones olímpicas mediante **Apache Spark y PySpark**. Integra las entidades de deportistas, resultados, equipos, eventos y ediciones de los juegos para aplicar operaciones de procesamiento distribuido: **RDD, DataFrames, transformaciones, uniones, particionamiento, funciones de agregación y Spark SQL**.
 
-El desarrollo está preparado para ejecutarse **localmente en VS Code y Jupyter**, sin depender de Google Colab ni de servidores MySQL o PostgreSQL. El notebook contiene código, explicaciones, salidas guardadas y comprobaciones de integridad.
-
-**Notebook principal:** [`Sumativa_2_grupo7.ipynb`](Sumativa_2_grupo7.ipynb).
+El procesamiento se realiza en un notebook Jupyter ejecutable localmente desde VS Code. Las funciones de lectura, normalización y análisis reutilizables se encuentran separadas en el módulo [`src/olimpicos.py`](src/olimpicos.py), mientras que el notebook [`Sumativa_2_grupo7.ipynb`](Sumativa_2_grupo7.ipynb) organiza el flujo analítico y presenta sus resultados.
 
 ## 2. Equipo de trabajo
 
@@ -27,12 +25,13 @@ El desarrollo está preparado para ejecutarse **localmente en VS Code y Jupyter*
 
 ## 3. Objetivos
 
-1. Configurar `SparkSession` y `SparkContext` en un entorno local reproducible.
-2. Crear, unir y transformar RDD, verificando sus conteos y particiones.
+1. Inicializar una sesión de Spark en un entorno local reproducible.
+2. Crear, unir y transformar RDD; inspeccionar sus registros y particiones.
 3. Construir DataFrames con esquemas y tipos de datos adecuados.
-4. Integrar archivos CSV y JSON preservando registros con referencias incompletas.
-5. Calcular indicadores derivados y estadísticas descriptivas mediante DataFrames y Spark SQL.
-6. Documentar decisiones de limpieza, resultados y controles de integridad.
+4. Integrar información de deportistas, resultados, equipos, eventos y juegos olímpicos.
+5. Aplicar reparticionamiento y persistencia para ilustrar el procesamiento distribuido.
+6. Calcular columnas derivadas y agregaciones descriptivas, además de consultar los datos mediante Spark SQL.
+7. Validar la conservación de registros y documentar decisiones de calidad de datos.
 
 ## 4. Estructura del repositorio
 
@@ -45,6 +44,9 @@ olympic-games-bigdata-analytics/
 │   ├── evento.csv
 │   ├── juegos.json
 │   └── resultados.csv
+├── src/
+│   ├── __init__.py
+│   └── olimpicos.py
 ├── Sumativa_2_grupo7.ipynb
 ├── requirements.txt
 ├── .gitignore
@@ -52,6 +54,18 @@ olympic-games-bigdata-analytics/
 ```
 
 Los seis archivos de entrada están versionados en `data/`. La carpeta `data_procesada/` se crea al ejecutar el notebook y está excluida de Git mediante `.gitignore`; almacena la copia normalizada de eventos sin sobrescribir los datos originales.
+
+### Funciones del módulo `src/olimpicos.py`
+
+| Función | Propósito |
+|---|---|
+| `campos_deportista()` | Lee los siete campos de cada registro y admite una coma final sobrante. |
+| `entero_o_none()` / `decimal_o_none()` | Convierte valores numéricos y trata marcadores de ausencia como `None`. |
+| `parsear_deportista()` | Convierte cada registro a una tupla con tipos apropiados. |
+| `preparar_eventos()` | Normaliza filas encapsuladas en comillas y escribe una copia procesada. |
+| `calcular_columnas()` | Incorpora el índice de masa corporal (IMC) y la descripción del sexo. |
+| `medallas_equipo()` | Cuenta registros con medalla de oro, plata y bronce por equipo. |
+| `estadisticas()` | Calcula suma, cantidad válida, promedio, máximo y mínimo por grupo. |
 
 ## 5. Entorno y ejecución
 
@@ -86,9 +100,25 @@ Si `java -version` falla, instalar el JDK y revisar `JAVA_HOME` y `PATH` antes d
 | `resultados.csv` | 271.116 | Separador `;`; nueve `evento_id` no válidos se convierten en `NULL` |
 | `juegos.json` | 51 | Ajuste de nombres: el campo original `temporada` contiene el año y `ciudad` la estación |
 
-Se usan **uniones `left` desde `Resultado`** para conservar los registros incluso si una clave no encuentra correspondencia. El análisis identifica **200 participaciones sin nombre de equipo** y **9 sin nombre de evento**, sin perder filas de la tabla de resultados.
+### Consideraciones de calidad
 
-Los valores **0 en edad, altura o peso** representan datos no informados en estos archivos: se excluyen de las agregaciones que requieran medidas válidas y el IMC se calcula únicamente con peso y altura positivos.
+- La conversión `try_cast(evento_id AS INT)` evita que identificadores no válidos interrumpan la lectura; se detectan **9 resultados sin nombre de evento**.
+- Se realizan uniones `left` a partir de `Resultado`, conservando sus **271.116 filas**. Se identifican **200 resultados sin equipo catalogado** y **0 sin deportista relacionado**.
+- En las estadísticas de edad, altura y peso, el valor `0` se interpreta como no informado y no se utiliza como una medición válida.
+- El IMC solo se calcula cuando peso y altura son positivos: `peso_kg / (altura_cm / 100)²`.
+- Las estadísticas describen **registros de participaciones**, no necesariamente deportistas únicos ni relaciones causales.
+
+### Aclaración sobre `temporada` y `anio`
+
+El archivo original `juegos.json` utiliza el campo **`temporada` para almacenar el año de celebración** y el campo **`ciudad` para identificar la estación olímpica** (Verano o Invierno). Para mejorar la interpretación, el notebook renombra estos campos de la siguiente manera:
+
+| Campo original (`juegos.json`) | Campo utilizado en el notebook | Interpretación |
+|---|---|---|
+| `temporada` | `anio` | Año de celebración de los Juegos Olímpicos. |
+| `ciudad` | `temporada` | Estación olímpica: Verano o Invierno. |
+| `ano` | `edicion` | Campo original conservado bajo un nombre diferenciado. |
+
+**La agregación denominada `temporada` se agrupa por `anio`**, es decir, por el contenido del campo originalmente llamado `temporada`. Esta decisión conserva la agrupación solicitada sobre la variable de origen y evita confundir el año con la estación olímpica. El DataFrame resultante sigue llamándose `temporada`.
 
 ## 7. Metodología aplicada
 
@@ -104,6 +134,15 @@ Los valores **0 en edad, altura o peso** representan datos no informados en esto
 | Columnas derivadas | IMC con altura expresada en metros y `Descripción_sexo` | Nuevas columnas comprobadas |
 | Agregaciones | Medallas por equipo; edad por medalla y sexo; altura por temporada | Tablas de suma, promedio, máximo y mínimo |
 | SQL | Vista temporal y `spark.sql()` sobre resultados olímpicos | Medallas por temporada y tipo |
+
+### Agregaciones implementadas
+
+1. **Medallas por equipo:** cantidad de registros con `Gold`, `Silver` y `Bronze`, además del total por equipo.
+2. **Edad por tipo de medalla:** suma, promedio, máximo y mínimo, excluyendo edades no informadas.
+3. **DataFrame `temporada`:** suma, promedio, máximo y mínimo de la altura en centímetros **por año de celebración** (`anio`).
+4. **DataFrame `sexo`:** suma, promedio, máximo y mínimo de la edad según sexo, entre registros válidos.
+
+La función general `estadisticas()` añade también `cantidad_deportistas`, que cuenta los registros con un valor válido de la variable analizada. Este nombre de columna no implica necesariamente personas únicas.
 
 ## 8. Resultados obtenidos
 
