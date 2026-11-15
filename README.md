@@ -1,39 +1,19 @@
-# Análisis histórico de los Juegos Olímpicos con Apache Spark
+# Análisis de datos distribuidos — Big Data MCDI502
 
-**Evaluación Sumativa 2 · Taller 1 · MCDI502 — Gestión de Datos y Tecnologías Big Data**  
-**Magíster en Ciencia de Datos e Inteligencia Artificial · Universidad Andrés Bello · Grupo 7**
+**Magíster en Ciencia de Datos e Inteligencia Artificial · Universidad Andrés Bello (UNAB)**  
+**Grupo 7 · Cristian Grandón, Felipe Palma y Jorge Gutiérrez**
 
-![Apache Spark](https://img.shields.io/badge/Apache_Spark-4.0.3-E25A1C?logo=apachespark&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3.14.8-3776AB?logo=python&logoColor=white)
-![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-F37626?logo=jupyter&logoColor=white)
-![Estado](https://img.shields.io/badge/Estado-Evidencia_de_ejecuci%C3%B3n_disponible-2E7D32)
+Este repositorio contiene los talleres prácticos desarrollados con Python, Apache Spark, PySpark y Spark SQL. Los notebooks están separados por evaluación para facilitar su lectura, ejecución y entrega en Canvas.
 
-## 1. Descripción
+| Evaluación | Notebook | Plataforma exigida por la pauta | Entrega | Ponderación |
+|---|---|---|---|---|
+| Sumativa 2 · Taller I | `mcdi502_s2_grupo7.ipynb` | Notebook ejecutable (VS Code/Jupyter o Colab) | Notebook + video, ZIP | 40% |
+| Sumativa 3 · Taller II | [`mcdi502_s3_grupo7.ipynb`](mcdi502_s3_grupo7.ipynb) | Notebook ejecutable (Colab sugerido; no exclusivo) | Notebook + video, ZIP | 20% |
+| Sumativa 4 · Taller III | [`mcdi502_s4_grupo7.ipynb`](mcdi502_s4_grupo7.ipynb) | **Databricks obligatorio** | Notebook Databricks, ZIP | 20% |
 
-Este proyecto analiza registros históricos de participaciones olímpicas mediante **Apache Spark y PySpark**. Integra las entidades de deportistas, resultados, equipos, eventos y ediciones de los juegos para aplicar operaciones de procesamiento distribuido: **RDD, DataFrames, transformaciones, uniones, particionamiento, funciones de agregación y Spark SQL**.
+> **Estado de las versiones actualizadas:** los notebooks S3 y S4 pasaron validación estructural (`nbformat`) y análisis de sintaxis, **pero sus conexiones y consultas deben ejecutarse en los entornos del grupo**. Las credenciales de MongoDB, el token AQICN, los servicios externos y la sesión de Databricks no están disponibles en este repositorio. No se incluyen resultados simulados ni se afirma haber realizado una ejecución remota.
 
-El procesamiento se realiza en un notebook Jupyter ejecutable localmente desde VS Code. Las funciones de lectura, normalización y análisis reutilizables se encuentran separadas en el módulo [`src/olimpicos.py`](src/olimpicos.py), mientras que el notebook [`Sumativa_2_grupo7.ipynb`](Sumativa_2_grupo7.ipynb) organiza el flujo analítico y presenta sus resultados.
-
-## 2. Equipo de trabajo
-
-**Grupo 7 — Universidad Andrés Bello**
-
-- Felipe Palma Barrientos
-- Vicente Aguila Rojas
-- Cristian Grandon Grandon
-- Jorge Gutierrez Jaramillo
-
-## 3. Objetivos
-
-1. Inicializar una sesión de Spark en un entorno local reproducible.
-2. Crear, unir y transformar RDD; inspeccionar sus registros y particiones.
-3. Construir DataFrames con esquemas y tipos de datos adecuados.
-4. Integrar información de deportistas, resultados, equipos, eventos y juegos olímpicos.
-5. Aplicar reparticionamiento y persistencia para ilustrar el procesamiento distribuido.
-6. Calcular columnas derivadas y agregaciones descriptivas, además de consultar los datos mediante Spark SQL.
-7. Validar la conservación de registros y documentar decisiones de calidad de datos.
-
-## 4. Estructura del repositorio
+## Estructura sugerida
 
 ```text
 olympic-games-bigdata-analytics/
@@ -43,155 +23,121 @@ olympic-games-bigdata-analytics/
 │   ├── equipo.csv
 │   ├── evento.csv
 │   ├── juegos.json
-│   └── resultados.csv
+│   ├── resultados.csv
+│   ├── ventas_concepcion.csv
+│   ├── ventas_santiago.csv
+│   └── ventas_vina_del_mar.csv
 ├── src/
 │   ├── __init__.py
 │   └── olimpicos.py
-├── Sumativa_2_grupo7.ipynb
+├── mcdi502_s2_grupo7.ipynb
+├── mcdi502_s3_grupo7.ipynb
+├── mcdi502_s4_grupo7.ipynb
 ├── requirements.txt
 ├── .gitignore
 └── README.md
 ```
 
-Los seis archivos de entrada están versionados en `data/`. La carpeta `data_procesada/` se crea al ejecutar el notebook y está excluida de Git mediante `.gitignore`; almacena la copia normalizada de eventos sin sobrescribir los datos originales.
-
-### Funciones del módulo `src/olimpicos.py`
-
-| Función | Propósito |
-|---|---|
-| `campos_deportista()` | Lee los siete campos de cada registro y admite una coma final sobrante. |
-| `entero_o_none()` / `decimal_o_none()` | Convierte valores numéricos y trata marcadores de ausencia como `None`. |
-| `parsear_deportista()` | Convierte cada registro a una tupla con tipos apropiados. |
-| `preparar_eventos()` | Normaliza filas encapsuladas en comillas y escribe una copia procesada. |
-| `calcular_columnas()` | Incorpora el índice de masa corporal (IMC) y la descripción del sexo. |
-| `medallas_equipo()` | Cuenta registros con medalla de oro, plata y bronce por equipo. |
-| `estadisticas()` | Calcula suma, cantidad válida, promedio, máximo y mínimo por grupo. |
-
-## 5. Entorno y ejecución
-
-**Entorno con ejecución documentada en el notebook:** Python **3.14.8**, PySpark / Spark **4.0.3** y **Java JDK 17**. El archivo [`requirements.txt`](requirements.txt) declara `pyspark==4.0.3` e `ipykernel>=6,<8`. En otros equipos, es necesario comprobar que la combinación instalada de Python, Java y PySpark sea compatible.
-
-En **PowerShell**, desde la raíz de este repositorio:
-
-```powershell
-# Crear entorno virtual
-py -m venv .venv
-
-# Instalar dependencias utilizando el Python del entorno
-.\.venv\Scripts\python.exe -m pip install --upgrade pip
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-
-# Comprobar disponibilidad del JDK
-java -version
-```
-
-Abrir [`Sumativa_2_grupo7.ipynb`](Sumativa_2_grupo7.ipynb) en VS Code, seleccionar el kernel de `.venv` y elegir **Restart Kernel → Run All**. Iniciar Jupyter desde la **raíz del repositorio**: el notebook toma `Path.cwd()` como directorio base y espera encontrar allí `data/`.
-
-Si `java -version` falla, instalar el JDK y revisar `JAVA_HOME` y `PATH` antes de reiniciar VS Code. Se recomienda volver a guardar el notebook después de ejecutar todas las celdas para conservar sus salidas y una numeración secuencial completa.
-
-## 6. Datos y decisiones de calidad
-
-| Fuente | Registros | Consideración aplicada |
-|---|---:|---|
-| `deportista.csv` | 67.786 | Lectura controlada de una fila con coma final sobrante (ID 16587) |
-| `deportista2.csv` | 67.785 | Unión con el primer RDD; los pesos decimales se representan como `double` |
-| `equipo.csv` | 1.184 | Catálogo de equipos para enriquecimiento de resultados |
-| `evento.csv` | 765 | Normalización de 280 filas encapsuladas en comillas, sobre copia derivada |
-| `resultados.csv` | 271.116 | Separador `;`; nueve `evento_id` no válidos se convierten en `NULL` |
-| `juegos.json` | 51 | Ajuste de nombres: el campo original `temporada` contiene el año y `ciudad` la estación |
-
-### Consideraciones de calidad
-
-- La conversión `try_cast(evento_id AS INT)` evita que identificadores no válidos interrumpan la lectura; se detectan **9 resultados sin nombre de evento**.
-- Se realizan uniones `left` a partir de `Resultado`, conservando sus **271.116 filas**. Se identifican **200 resultados sin equipo catalogado** y **0 sin deportista relacionado**.
-- En las estadísticas de edad, altura y peso, el valor `0` se interpreta como no informado y no se utiliza como una medición válida.
-- El IMC solo se calcula cuando peso y altura son positivos: `peso_kg / (altura_cm / 100)²`.
-- Las estadísticas describen **registros de participaciones**, no necesariamente deportistas únicos ni relaciones causales.
-
-### Aclaración sobre `temporada` y `anio`
-
-El archivo original `juegos.json` utiliza el campo **`temporada` para almacenar el año de celebración** y el campo **`ciudad` para identificar la estación olímpica** (Verano o Invierno). Para mejorar la interpretación, el notebook renombra estos campos de la siguiente manera:
-
-| Campo original (`juegos.json`) | Campo utilizado en el notebook | Interpretación |
-|---|---|---|
-| `temporada` | `anio` | Año de celebración de los Juegos Olímpicos. |
-| `ciudad` | `temporada` | Estación olímpica: Verano o Invierno. |
-| `ano` | `edicion` | Campo original conservado bajo un nombre diferenciado. |
-
-**La agregación denominada `temporada` se agrupa por `anio`**, es decir, por el contenido del campo originalmente llamado `temporada`. Esta decisión conserva la agrupación solicitada sobre la variable de origen y evita confundir el año con la estación olímpica. El DataFrame resultante sigue llamándose `temporada`.
-
-## 7. Metodología aplicada
-
-| Etapa | Implementación en el notebook | Evidencia |
-|---|---|---|
-| Inicialización | `SparkSession`, `SparkContext` y lectura de archivos | Spark 4.0.3 y seis archivos detectados |
-| RDD | Primer RDD con **6 particiones**, segundo RDD y `union()` | 67.786 + 67.785 = **135.571** registros |
-| Transformaciones | `filter()` para mayores de edad y mujeres; `map()` a mayúsculas | Conteos y muestras visibles |
-| DataFrame de deportistas | Conversión del RDD unido a un esquema tipado de **7 columnas** | `printSchema()` y ejemplos |
-| Integración | DataFrames de Evento, Resultado, Equipos y Juego; `left joins` y `broadcast()` | **271.116** resultados preservados |
-| Paralelismo | `repartition(5)` y persistencia en caché | **5 particiones** verificadas |
-| Exploración | `count()`, `dtypes`, `printSchema()` y `show()` | Conteos, tipos y esquema |
-| Columnas derivadas | IMC con altura expresada en metros y `Descripción_sexo` | Nuevas columnas comprobadas |
-| Agregaciones | Medallas por equipo; edad por medalla y sexo; altura por temporada | Tablas de suma, promedio, máximo y mínimo |
-| SQL | Vista temporal y `spark.sql()` sobre resultados olímpicos | Medallas por temporada y tipo |
-
-### Agregaciones implementadas
-
-1. **Medallas por equipo:** cantidad de registros con `Gold`, `Silver` y `Bronze`, además del total por equipo.
-2. **Edad por tipo de medalla:** suma, promedio, máximo y mínimo, excluyendo edades no informadas.
-3. **DataFrame `temporada`:** suma, promedio, máximo y mínimo de la altura en centímetros **por año de celebración** (`anio`).
-4. **DataFrame `sexo`:** suma, promedio, máximo y mínimo de la edad según sexo, entre registros válidos.
-
-La función general `estadisticas()` añade también `cantidad_deportistas`, que cuenta los registros con un valor válido de la variable analizada. Este nombre de columna no implica necesariamente personas únicas.
-
-## 8. Resultados obtenidos
-
-### Controles de procesamiento
-
-| Indicador | Resultado |
-|---|---:|
-| Registros de deportistas unidos | **135.571** |
-| Deportistas mayores de edad (registros del RDD) | **123.244** |
-| Registros de mujeres (RDD) | **33.981** |
-| Resultados olímpicos integrados | **271.116** |
-| Particiones del RDD inicial | **6** |
-| Particiones del DataFrame reparticionado | **5** |
-| Registros con medalla (`Gold`, `Silver`, `Bronze`) | **39.783** |
-| Referencias a eventos no resueltas | **9** |
-| Referencias a equipos no resueltas | **200** |
-
-Los controles de la última celda informan **«VALIDACIONES ESTRUCTURALES: OK»** y corroboran que la suma de registros con medalla agrupados por equipo coincide con el total de registros premiados.
-
-### Ejemplos de análisis descriptivo
-
-- **Registros con medalla por equipo:** Estados Unidos **5.310**, Unión Soviética **2.604** y Alemania **1.890**.
-- **Edad media por tipo de medalla:** bronce **23,69**, oro **23,70** y plata **23,75** años, entre registros con edad válida.
-- **Altura media por temporada:** Invierno **174,59 cm** y Verano **175,52 cm**, entre registros con altura válida.
-- **Edad media por sexo:** hombre **24,43** y mujer **21,86** años, entre registros con edad válida.
-
-**Interpretación importante:** el conteo de medallas suma **filas de deportistas con medalla**. No equivale necesariamente al número de podios olímpicos únicos, especialmente en deportes colectivos. Las estadísticas corresponden a los registros históricos presentes en este conjunto de datos y no implican causalidad.
-
-## 9. Evidencia de ejecución y reproducibilidad
-
-El notebook publicado incluye **18 celdas de código**, todas con salidas guardadas y **sin errores de ejecución registrados** en la versión auditada. Las salidas evidencian que Spark funcionó, aunque **no sustituyen una nueva ejecución integral desde un kernel limpio** antes de cerrar el proyecto.
-
-Antes de usarlo como versión definitiva, ejecutar **Restart Kernel → Run All**, comprobar que las celdas se numeren secuencialmente y guardar el `.ipynb`. Se espera que continúen cumpliéndose, entre otros, estos controles:
-
-```text
-RDD inicial:                    6 particiones
-RDD unido:                      135571 registros
-DataFrame de resultados:        271116 registros
-DataFrame reparticionado:       5 particiones
-Registros con medalla:          39783
-Verificaciones estructurales:   OK
-```
-
-La carpeta temporal `data_procesada/` puede regenerarse a partir de los seis archivos originales. No se requieren archivos auxiliares externos al árbol publicado.
-
-## 10. Alcance
-
-El repositorio documenta la **implementación técnica y sus resultados**. La evaluación académica final depende de la pauta oficial y de la comprobación del trabajo por el docente; los controles del código no constituyen una calificación ni una certificación de todos los puntos posibles.
+Los archivos originales proporcionados por la asignatura se conservan sin modificaciones. **No se suben** contraseñas, tokens, carpetas `.venv/`, bases privadas ni archivos temporales de sesiones.
 
 ---
 
-**Grupo 7 · MCDI502 · Big Data · Universidad Andrés Bello**
+## Sumativa 2 — Juegos Olímpicos
+
+Se integran los registros de deportistas, equipos, eventos, juegos y resultados con RDDs y DataFrames de PySpark. Se implementan particionamiento, transformación, cálculo de IMC, medallas por equipo y estadísticas de altura/edad, además de una consulta Spark SQL.
+
+- El módulo `src/olimpicos.py` agrupa funciones reutilizables que el notebook importa.
+- En la ejecución previamente documentada de la Sumativa 2 se unieron **135.571 deportistas** (67.786 + 67.785), se preservaron **271.116 resultados** y se aplicaron **6 particiones al RDD inicial** y **5 particiones al DataFrame integrado**.
+- Las estadísticas de deportistas y el conteo de medallas se hacen sobre registros históricos de participaciones; en deportes colectivos, una medalla de podio puede aparecer en varias filas.
+- El entorno local necesita un JDK compatible, Python y PySpark. El archivo `requirements.txt` facilita la instalación de paquetes Python, **pero no instala Java**.
+- La entrega oficial de la Sumativa 2 es el notebook más un video grupal en un único ZIP; si se mantiene la arquitectura modular, el ZIP necesita también los archivos `src/` y las fuentes `data/` para ser ejecutable.
+
+## Sumativa 3 — Cuatro fuentes heterogéneas
+
+**Objetivo:** crear cuatro DataFrames de **100 registros reales cada uno** y mostrar sus resultados, dos columnas transformadas, integración explicada y las consultas **C1 a C7**.
+
+| Fuente | DataFrame | Acceso | Variables exigidas |
+|---|---|---|---|
+| Open-Meteo | `df_openmeteo` | API pública | Temperatura y humedad a 2 m, precipitación, viento 10 m, dirección del viento e índice UV |
+| AQICN | `df_aqicn` | API con token personal | PM2.5, PM10, O3, NO2, SO2 |
+| MongoDB ESP32 | `df_mongo_bpm` | URI y autorización del docente | Altura en pies, presión atmosférica, monóxido de carbono |
+| MySQL ESP32 | `df_mysql_dht` | Endpoint JSON/REST del curso | Temperatura interior y humedad |
+
+### Ejecutar en Google Colab
+
+1. Abre `mcdi502_s3_grupo7.ipynb` desde Colab. La primera celda de código instala paquetes Python si faltan y comprueba Java; puede requerir internet.
+2. Ten disponible un **token válido** de AQICN para la ciudad elegida y la **URI de MongoDB autorizada** por el docente. Se introducen de manera interactiva sin escribirlas en el repositorio.
+3. Ejecuta el notebook **desde cero y en orden**, con la sesión limpia. La recolección de AQICN efectúa 100 solicitudes separadas por un segundo y puede estar limitada por las políticas de la API.
+4. Confirma en la sección de control que **cada DataFrame tiene 100 registros** y que AQICN corresponde a la región solicitada.
+5. Verifica la columna `altura_metros`, la clasificación `condicion_clima`, la integración `df_unificado` y las **siete consultas Spark SQL**.
+6. Guarda el notebook con sus salidas. Graba con los tres integrantes un video de **7 a 10 minutos** y entrega ambos archivos dentro de un ZIP.
+
+**Aspecto crítico:** AQICN puede devolver la misma medición en sucesivas consultas; el notebook distingue **100 capturas** de **100 mediciones históricas distintas**. La pauta exige 100 registros por fuente, pero la API no garantiza 100 mediciones diferentes al consultar una estación repetidamente. No consideres esto resuelto si el docente interpreta «registros» como observaciones independientes.
+
+**Otro límite externo:** si MongoDB o MySQL contiene menos de 100 registros reales, el notebook presenta el número de filas disponible y marca el requisito como pendiente. Debes conseguir más datos o acceso autorizado por el docente; **no dupliques filas** para aparentar la cantidad.
+
+### Ejecutar en VS Code/Jupyter (opcional para S3)
+
+```powershell
+py -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+java -version
+```
+
+Requiere Java JDK instalado por separado y un kernel que corresponda a `.venv`. El notebook S3 no necesita `src/` ni archivos CSV locales: lee las cuatro fuentes reales por API/BD. La instalación de Java en Colab, cuando sea necesaria, se realiza por comandos de la primera celda; en Windows Java se instala manualmente.
+
+### Consultas de la pauta S3
+
+- **C1:** diez temperaturas más altas, orden descendente.
+- **C2:** promedio de humedad para un día y mes identificados.
+- **C3:** cantidad de registros con precipitación sobre 2 mm en la muestra de la última semana.
+- **C4:** promedios de PM2.5, PM10, O3, NO2 y SO2.
+- **C5:** cantidad de registros con NO2 superior a 4.
+- **C6:** diez registros MongoDB incluyendo `altura_metros`.
+- **C7:** diez registros Open-Meteo incluyendo `condicion_clima`.
+
+## Sumativa 4 — Ventas retail en Databricks
+
+**Atención:** la guía exige **desarrollo íntegro en Databricks**, no una ejecución local que imite su entorno. El notebook nuevo está diseñado para importarse en ese servicio; utiliza las variables `spark` y `dbutils` provistas por Databricks y lee archivos desde DBFS o un Volume.
+
+### Ejecutar y guardar
+
+1. Descarga de Canvas los tres CSV originales: `ventas_vina_del_mar.csv`, `ventas_santiago.csv` y `ventas_concepcion.csv`.
+2. Súbelos al **Databricks File System (DBFS)** del espacio de evaluación. Si tu cuenta usa Unity Catalog Volumes, carga allí los archivos y reemplaza `RUTA_BASE` por `/Volumes/<catalogo>/<esquema>/<volumen>`.
+3. Abre e importa `mcdi502_s4_grupo7.ipynb` en Databricks y asígnale cómputo activo (un clúster o entorno compatible).
+4. Ejecuta **Run all**. Verifica que cada DataFrame muestre esquema y cinco filas, que el conteo del unificado sea la suma de los tres CSV y que las conversiones funcionen.
+5. Comprueba la eliminación de duplicados, imputación de categorías, normalización de nombres, fechas y precios, el filtrado `cantidad > 0`, `precio_total`, `dia_semana`, el IQR y el cuadro de calidad **antes/después**.
+6. Verifica la vista temporal `ventas_limpias` y las **tres consultas `spark.sql()`**.
+7. Guarda las salidas, **exporta el notebook** como `mcdi502_s4_grupo7.ipynb`, comprímelo en un solo ZIP y súbelo a Canvas. **No se solicita video para la Sumativa 4.**
+
+### Validaciones explícitas
+
+- Integridad: `registros_unificados == registros_vina + registros_santiago + registros_concepcion`.
+- Reconciliación: `filas_originales - duplicados - rechazadas == filas_finales`.
+- Datos válidos: ninguna cantidad es menor o igual a cero y ningún `precio_total` es negativo.
+- Calidad: recuento de nulos/vacíos por columna y duplicados **antes y después**.
+- Valores atípicos: regla IQR en `precio_unitario` con outliers marcados; no se eliminan en silencio.
+
+Los resultados de ventas pueden variar si los datos docentes cambian. **No se codifican conteos ni importes fijos** para aparentar una ejecución.
+
+---
+
+## Uso de GitHub y entrega oficial
+
+GitHub se utiliza para versionar y colaborar, **no sustituye Canvas**.
+
+```bash
+git add README.md requirements.txt mcdi502_s3_grupo7.ipynb mcdi502_s4_grupo7.ipynb
+git commit -m "Mejora Sumativas 3 y 4 conforme a rúbricas"
+git push origin main
+```
+
+No incluyas archivos `.venv/`, credenciales, tokens, ni información personal de las fuentes.
+
+**Fecha límite indicada en las dos pautas:** domingo 15 de noviembre de 2026, 23:59 (hora local del curso). Consulta Canvas para verificar el estado efectivo de la entrega.
+
+## Verificaciones de la actualización
+
+- Los dos archivos `.ipynb` fueron validados con `nbformat` y sus celdas de código pasaron comprobaciones de sintaxis con `ast.parse`.
+- **No se han ejecutado aquí** las conexiones remotas de AQICN, MongoDB, MySQL ni el workspace de Databricks. Las pruebas finales deben realizarse con el acceso real del grupo.
+- Para evitar evidencias engañosas, los notebooks actualizados se entregan **sin salidas previas**. Antes de enviar a Canvas, ejecuta y guarda los resultados reales.
